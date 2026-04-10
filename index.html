@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기도나눔 - 함께 기도해요</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background: linear-gradient(180deg, #8ECFB8, #7AC4AA);
+      color: #1a2e1a;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      color: white;
+      padding: 32px 20px 16px;
+      text-align: center;
+    }
+
+    .header-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 8px;
+      margin-left: -24px;
+    }
+
+    .header p {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+
+    /* View Toggle */
+    .view-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 20px 12px;
+    }
+
+    .view-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .view-btn.active {
+      background: white;
+      color: #6BB89A;
+      font-weight: 600;
+      border-color: white;
+    }
+
+    /* Section Title */
+    .section-header {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .card-count {
+      background: rgba(255,255,255,0.25);
+      color: white;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    /* === LIST VIEW === */
+    .list-view {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 8px 16px 100px;
+    }
+
+    .list-view .prayer-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    /* === CAROUSEL VIEW === */
+    .carousel-view {
+      display: none;
+      padding: 8px 0 100px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .carousel-wrapper {
+      overflow: hidden;
+      position: relative;
+      padding: 0 24px;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 20px;
+      transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .carousel-track .prayer-card {
+      width: 100%;
+      min-width: 100%;
+      min-height: 280px;
+      background: white;
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+
+    .carousel-track .card-content {
+      font-size: 16px;
+      flex: 1;
+    }
+
+    .carousel-track .card-footer {
+      margin-top: auto;
+    }
+
+    /* Carousel Indicator */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 20px;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: all 0.3s;
+    }
+
+    .carousel-dot.active {
+      background: white;
+      width: 20px;
+      border-radius: 4px;
+    }
+
+    /* Carousel Nav */
+    .carousel-nav {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .carousel-nav-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .carousel-nav-btn:hover {
+      background: rgba(255,255,255,0.35);
+    }
+
+    /* === SHARED CARD STYLES === */
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .card-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a2e1a;
+    }
+
+    .card-date {
+      font-size: 12px;
+      color: #88a88e;
+    }
+
+    .card-content {
+      font-size: 15px;
+      line-height: 1.65;
+      color: #3a4a3a;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+
+    .pray-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 14px;
+      padding: 6px 14px;
+      border-radius: 16px;
+      border: 1px solid #b5dece;
+      background: #eef7f2;
+      font-size: 13px;
+      color: #7AC4AA;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pray-btn:hover, .pray-btn.prayed {
+      background: #7AC4AA;
+      color: white;
+      border-color: #7AC4AA;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+    .empty-state p { font-size: 15px; line-height: 1.6; }
+
+    /* FAB */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: white;
+      color: #6BB89A;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+      z-index: 90;
+    }
+
+    .fab:hover { transform: scale(1.08); }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: white;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px 40px;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: #ddd;
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .modal h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #1a2e1a;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7AC4AA;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #b5dece;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #1a2e1a;
+      background: #eef7f2;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #7AC4AA;
+    }
+
+    .form-group textarea { height: 120px; resize: none; }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #8ECFB8, #7AC4AA);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* QR Modal */
+    .qr-modal {
+      background: white;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 24px;
+      padding: 32px 24px;
+      text-align: center;
+      animation: fadeIn 0.2s ease;
+      margin: auto;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .qr-modal h2 { font-size: 18px; font-weight: 700; color: #1a2e1a; margin-bottom: 8px; }
+    .qr-modal p { font-size: 13px; color: #88a88e; margin-bottom: 20px; }
+    #qrcode { display: flex; justify-content: center; margin-bottom: 20px; }
+
+    .qr-close-btn {
+      padding: 12px 32px;
+      background: #eef7f2;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #6BB89A;
+      cursor: pointer;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(0,0,0,0.75);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 300;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-logo">
+      <svg width="320" viewBox="0 0 1104 197" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0_5457_438)">
+          <path d="M439 82.0201C438.6 77.4901 439.43 73.0501 441.5 68.7201C443.57 64.3901 446.53 60.3201 450.4 56.5201C454.27 52.7201 458.7 49.2501 463.7 46.1201C468.7 42.9901 473.9 40.3401 479.3 38.1901C484.7 36.0301 490 34.4301 495.2 33.3901C500.4 32.3501 505.13 31.9601 509.4 32.2201C511.93 32.4901 514.6 33.0201 517.4 33.8201C520.2 34.6201 522.8 35.8201 525.2 37.4101C527.6 39.0101 529.67 40.9701 531.4 43.3001C533.13 45.6301 534.2 48.3901 534.6 51.5801C535.13 56.2401 534.07 60.7701 531.4 65.1601C528.73 69.5501 525.5 73.6101 521.7 77.3401C517.9 81.0701 514.07 84.3301 510.2 87.1201C506.33 89.9201 503.53 92.1101 501.8 93.7101C505.8 94.3801 509.73 95.6401 513.6 97.5001C518.93 100.43 521.6 104.35 521.6 109.28C521.6 113.94 520.17 118.63 517.3 123.36C514.43 128.08 510.7 132.41 506.1 136.34C501.5 140.27 496.33 143.49 490.6 146.02C484.87 148.55 479.13 149.88 473.4 150.01C467.4 150.28 463.2 149.04 460.8 146.31C458.4 143.58 457.07 140.08 456.8 135.81C456.13 129.41 456.47 123.14 457.8 117.01C459.13 110.88 460.9 104.78 463.1 98.7101C465.3 92.6401 467.67 86.5801 470.2 80.5101C472.73 74.4401 474.93 68.3401 476.8 62.2101C477.2 60.2101 478.03 58.7801 479.3 57.9101C480.57 57.0401 481.9 56.6801 483.3 56.8101C484.7 56.9401 485.9 57.5801 486.9 58.7101C487.9 59.8401 488.33 61.4101 488.2 63.4101C487.8 64.8801 486.43 68.0401 484.1 72.9101C481.77 77.7801 479.27 83.4401 476.6 89.9101C473.93 96.3801 471.33 103.24 468.8 110.51C466.26 117.78 464.6 124.61 463.8 131.01C463.53 133.68 463.63 135.78 464.1 137.31C464.57 138.84 465.27 140.04 466.2 140.91C467.13 141.78 468.23 142.34 469.5 142.61C470.77 142.88 472.13 143.08 473.6 143.21C477.33 143.21 481.43 142.08 485.9 139.81C490.37 137.54 494.57 134.68 498.5 131.21C502.43 127.75 505.7 123.94 508.3 119.81C510.9 115.68 512.2 111.74 512.2 108.01C512.2 106.68 511.5 105.34 510.1 104.01C508.7 102.68 507.27 101.74 505.8 101.21C503.53 100.14 500.93 99.8401 498 100.31C495.07 100.78 492.4 101.54 490 102.61C489.2 103.01 488.47 103.44 487.8 103.91C487.13 104.38 486.47 104.81 485.8 105.21C485.53 105.21 485.3 105.28 485.1 105.41C484.9 105.54 484.47 105.74 483.8 106.01C483.67 106.01 483.53 106.04 483.4 106.11C483.27 106.18 483.13 106.21 483 106.21C481.53 106.48 480.33 106.38 479.4 105.91C478.47 105.44 477.8 104.74 477.4 103.81C477 102.88 476.97 101.91 477.3 100.91C477.63 99.9101 478.4 99.0801 479.6 98.4101C480 98.4101 480.8 98.1401 482 97.6101C483.2 97.0801 484 96.7401 484.4 96.6101C486.93 95.1401 489.47 93.3801 492 91.3101C494.53 89.2401 496.93 87.2801 499.2 85.4101C503.47 81.8101 507.3 78.3101 510.7 74.9101C514.1 71.5101 517.4 67.6101 520.6 63.2101C520.87 62.9401 521.27 62.2801 521.8 61.2101C522.33 60.1401 522.9 58.9101 523.5 57.5101C524.1 56.1101 524.6 54.6401 525 53.1101C525.4 51.5801 525.53 50.2101 525.4 49.0101C525.4 47.6801 524.9 46.4801 523.9 45.4101C522.9 44.3401 521.67 43.4101 520.2 42.6101C518.73 41.8101 517.17 41.1801 515.5 40.7101C513.83 40.2501 512.33 40.0101 511 40.0101C506.07 39.8801 501.03 40.4501 495.9 41.7101C490.77 42.9801 485.77 44.7801 480.9 47.1101C476.03 49.4401 471.43 52.2101 467.1 55.4101C462.77 58.6101 458.93 62.0801 455.6 65.8101M479.8 98.2201H480C479.87 98.3501 479.73 98.4201 479.6 98.4201L479.8 98.2201Z" fill="white"/>
+          <path d="M558.79 131.22C558.12 131.35 557.52 131.49 556.99 131.62C556.46 131.75 555.86 131.69 555.19 131.42C554.52 131.02 553.96 130.42 553.49 129.62C553.02 128.82 552.79 128.15 552.79 127.62C552.79 127.35 552.92 126.72 553.19 125.72C553.46 124.72 553.72 123.65 553.99 122.52C554.26 121.39 554.56 120.25 554.89 119.12C555.22 117.99 555.46 117.22 555.59 116.82C556.52 114.82 558.02 113.19 560.09 111.92C562.16 110.65 564.12 110.09 565.99 110.22C566.79 110.35 567.16 110.55 567.09 110.82C567.02 111.09 567.12 111.42 567.39 111.82C567.66 112.09 567.96 112.39 568.29 112.72C568.62 113.05 568.72 113.35 568.59 113.62L568.19 115.02L563.59 127.42C563.19 128.49 562.42 129.39 561.29 130.12C560.16 130.85 559.32 131.22 558.79 131.22ZM566.59 95.2198C565.92 95.3498 564.99 95.4898 563.79 95.6198C562.59 95.7498 561.66 95.6898 560.99 95.4198C560.32 95.0198 559.76 94.4198 559.29 93.6198C558.82 92.8198 558.59 92.1498 558.59 91.6198C558.59 91.0898 558.89 89.8198 559.49 87.8198C560.09 85.8198 560.59 84.2898 560.99 83.2198C561.92 81.3498 563.39 80.1198 565.39 79.5198C567.39 78.9198 569.39 78.6898 571.39 78.8198C572.06 78.9498 572.35 79.1498 572.29 79.4198C572.22 79.6898 572.32 80.0198 572.59 80.4198C572.86 80.6898 573.16 80.9498 573.49 81.2198C573.82 81.4898 573.92 81.7598 573.79 82.0198L573.39 83.4198L571.39 91.4198C570.99 92.4898 570.22 93.3898 569.09 94.1198C567.96 94.8498 567.12 95.2198 566.59 95.2198Z" fill="white"/>
+          <path d="M646.59 61.0199C645.79 59.1499 646.06 57.8199 647.39 57.0199C648.72 56.2199 650.12 56.5499 651.59 58.0199C652.66 59.0899 654.19 59.8899 656.19 60.4199C658.19 60.9499 660.26 61.3199 662.39 61.5199C664.52 61.7199 666.52 61.8199 668.39 61.8199H672.79C673.06 61.6899 673.96 61.5199 675.49 61.3199C677.02 61.1199 677.86 60.9499 677.99 60.8199C678.12 60.8199 678.72 60.6899 679.79 60.4199C680.99 57.2199 682.46 53.8199 684.19 50.2199C685.92 46.6199 687.79 43.3499 689.79 40.4199C691.79 37.4899 693.92 35.1199 696.19 33.3199C698.46 31.5199 700.86 30.7499 703.39 31.0199C706.06 31.2899 707.89 32.8199 708.89 35.6199C709.89 38.4199 710.46 41.3499 710.59 44.4199C710.86 49.4899 709.12 53.7499 705.39 57.2199C701.66 60.6899 696.46 63.6199 689.79 66.0199V66.2199C685.39 76.8899 680.29 87.6899 674.49 98.6199C668.69 109.55 662.19 119.62 654.99 128.82C654.19 129.75 653.39 130.65 652.59 131.52C651.79 132.39 650.86 133.29 649.79 134.22C656.59 137.02 663.19 140.22 669.59 143.82C675.99 147.42 682.46 150.75 688.99 153.82C694.19 156.22 700.16 158.69 706.89 161.22C713.62 163.75 720.46 165.72 727.39 167.12C734.32 168.52 741.02 169.15 747.49 169.02C753.96 168.89 759.52 167.29 764.19 164.22C764.86 163.55 765.56 163.29 766.29 163.42C767.02 163.55 767.59 163.92 767.99 164.52C768.39 165.12 768.59 165.82 768.59 166.62C768.59 167.42 768.19 168.22 767.39 169.02C764.06 171.29 760.09 172.85 755.49 173.72C750.89 174.59 745.89 174.89 740.49 174.62C735.09 174.35 729.52 173.65 723.79 172.52C718.06 171.39 712.42 170.02 706.89 168.42C701.36 166.82 696.16 165.05 691.29 163.12C686.42 161.19 682.19 159.35 678.59 157.62C673.92 155.35 668.42 152.62 662.09 149.42C655.76 146.22 648.99 143.29 641.79 140.62C637.12 143.69 632.12 146.15 626.79 148.02C621.46 149.89 616.19 150.95 610.99 151.22C608.99 151.22 606.52 150.89 603.59 150.22C600.66 149.55 597.96 148.52 595.49 147.12C593.02 145.72 591.12 143.92 589.79 141.72C588.46 139.52 588.39 136.89 589.59 133.82C590.79 130.89 593.09 128.79 596.49 127.52C599.89 126.25 603.59 125.52 607.59 125.32C611.59 125.12 615.52 125.25 619.39 125.72C623.26 126.19 626.39 126.69 628.79 127.22C630.25 127.49 631.69 127.85 633.09 128.32C634.49 128.79 635.92 129.22 637.39 129.62C641.92 126.42 646.06 122.49 649.79 117.82C653.52 113.15 656.96 108.19 660.09 102.92C663.22 97.6499 666.06 92.2899 668.59 86.8199C671.12 81.3499 673.39 76.2199 675.39 71.4199C675.52 71.1499 675.66 70.8199 675.79 70.4199C675.92 70.0199 676.06 69.5499 676.19 69.0199C674.46 69.1499 672.79 69.1499 671.19 69.0199C668.66 68.7499 666.16 68.5199 663.69 68.3199C661.22 68.1199 658.72 67.6899 656.19 67.0199C654.32 66.3499 652.52 65.5899 650.79 64.7199C649.06 63.8499 647.66 62.6199 646.59 61.0199ZM616.79 140.72C620.25 139.59 623.66 138.09 626.99 136.22C621.66 134.89 616.46 134.22 611.39 134.22C606.32 134.22 601.52 135.15 596.99 137.02C597.39 137.82 598.09 138.49 599.09 139.02C600.09 139.55 601.09 140.02 602.09 140.42C603.09 140.82 604.39 141.22 605.99 141.62C609.72 142.15 613.32 141.85 616.79 140.72ZM702.99 40.2199C700.46 41.4199 698.56 43.1199 697.29 45.3199C696.02 47.5199 694.99 49.9499 694.19 52.6199C696.06 51.1499 697.86 49.5499 699.59 47.8199C701.32 46.0899 702.72 44.2199 703.79 42.2199V40.9199C703.79 40.3199 703.52 40.0899 702.99 40.2199Z" fill="white"/>
+          <path d="M706.38 93.4202L706.98 93.8202C707.25 94.0902 707.31 94.2502 707.18 94.3202C707.05 94.3902 707.05 94.5502 707.18 94.8202C707.18 94.9502 707.05 95.4202 706.78 96.2202C706.51 97.0202 706.25 97.8502 705.98 98.7202C705.71 99.5902 705.25 100.76 704.58 102.22C703.78 104.89 702.75 107.92 701.48 111.32C700.21 114.72 699.05 117.82 697.98 120.62C697.05 123.02 696.51 124.89 696.38 126.22C696.25 127.55 696.25 128.89 696.38 130.22C696.51 131.69 697.01 133.42 697.88 135.42C698.75 137.42 699.98 138.42 701.58 138.42C702.91 138.55 704.88 137.32 707.48 134.72C710.08 132.12 712.71 129.09 715.38 125.62C718.05 122.15 720.55 118.65 722.88 115.12C725.21 111.59 726.91 108.95 727.98 107.22L728.18 107.02L728.98 106.02C729.25 105.75 729.51 105.62 729.78 105.62C730.18 105.62 730.48 105.89 730.68 106.42C730.88 106.95 731.01 107.55 731.08 108.22C731.15 108.89 731.18 109.52 731.18 110.12V111.22C731.18 111.49 731.14 111.65 731.08 111.72C731.01 111.79 730.98 111.89 730.98 112.02C730.58 112.82 730.25 113.55 729.98 114.22C729.71 114.89 729.38 115.55 728.98 116.22C728.05 117.82 726.88 119.62 725.48 121.62C724.08 123.62 722.65 125.62 721.18 127.62C719.71 129.62 718.21 131.59 716.68 133.52C715.14 135.45 713.71 137.09 712.38 138.42C710.91 139.89 709.15 140.99 707.08 141.72C705.01 142.45 703.31 142.82 701.98 142.82C697.05 142.82 693.31 141.32 690.78 138.32C688.25 135.32 686.85 132.09 686.58 128.62C685.91 120.09 688.91 109.55 695.58 97.0202C695.58 96.6202 695.85 96.1502 696.38 95.6202C697.18 94.6902 698.11 93.9502 699.18 93.4202C700.25 92.8902 701.31 92.5502 702.38 92.4202C703.45 92.2902 704.38 92.3202 705.18 92.5202C705.98 92.7202 706.38 93.0202 706.38 93.4202ZM708.19 86.8202C707.52 86.9502 706.59 87.0902 705.39 87.2202C704.19 87.3502 703.26 87.2902 702.59 87.0202C701.92 86.6202 701.36 86.0202 700.89 85.2202C700.42 84.4202 700.19 83.7602 700.19 83.2202C700.19 82.6802 700.52 81.7602 701.19 80.4202C701.86 79.0902 702.39 77.8902 702.79 76.8202C703.72 74.8202 705.19 73.5202 707.19 72.9202C709.19 72.3202 711.19 72.0902 713.19 72.2202C713.99 72.3502 714.36 72.5502 714.29 72.8202C714.22 73.0902 714.32 73.4202 714.59 73.8202C714.86 74.0902 715.16 74.3902 715.49 74.7202C715.82 75.0502 715.92 75.3502 715.79 75.6202L715.39 77.0202L712.99 83.0202C712.59 84.0902 711.82 84.9902 710.69 85.7202C709.56 86.4502 708.72 86.8202 708.19 86.8202Z" fill="white"/>
+          <path d="M735.98 82.8201C736.78 82.5501 737.75 82.6201 738.88 83.0201C740.01 83.4201 741.08 84.0201 742.08 84.8201C743.08 85.6201 743.88 86.4501 744.48 87.3201C745.08 88.1901 745.38 88.8901 745.38 89.4201C745.51 89.8201 745.31 90.4901 744.78 91.4201C744.24 92.3501 743.85 93.1501 743.58 93.8201L739.38 103.02C742.45 99.2901 745.68 95.9201 749.08 92.9201C752.48 89.9201 755.71 88.4201 758.78 88.4201C761.18 88.8201 762.81 90.1201 763.68 92.3201C764.55 94.5201 764.91 97.2501 764.78 100.52C764.65 103.79 764.18 107.32 763.38 111.12C762.58 114.92 761.78 118.55 760.98 122.02C760.18 125.49 759.58 128.52 759.18 131.12C758.78 133.72 758.85 135.42 759.38 136.22C761.38 136.22 763.98 134.95 767.18 132.42C770.38 129.89 773.65 126.92 776.98 123.52C780.31 120.12 783.35 116.72 786.08 113.32C788.81 109.92 790.71 107.42 791.78 105.82C792.98 105.02 794.18 104.95 795.38 105.62C796.58 106.29 796.78 107.42 795.98 109.02C794.91 111.42 793.31 114.05 791.18 116.92C789.05 119.79 786.71 122.62 784.18 125.42C781.65 128.22 779.05 130.89 776.38 133.42C773.71 135.95 771.31 138.09 769.18 139.82C767.71 141.15 766.05 142.19 764.18 142.92C762.31 143.65 760.45 144.02 758.58 144.02C756.31 144.02 754.28 143.42 752.48 142.22C750.68 141.02 749.45 139.09 748.78 136.42C748.24 134.15 748.31 131.02 748.98 127.02C749.65 123.02 750.41 119.05 751.28 115.12C752.15 111.19 752.91 107.75 753.58 104.82C754.25 101.89 754.31 100.29 753.78 100.02C752.58 99.4901 751.05 99.8501 749.18 101.12C747.31 102.39 745.31 104.15 743.18 106.42C741.05 108.69 738.95 111.25 736.88 114.12C734.81 116.99 732.98 119.75 731.38 122.42C730.71 124.69 730.08 126.95 729.48 129.22C728.88 131.49 728.31 133.82 727.78 136.22C727.25 139.02 727.45 142.09 728.38 145.42C728.51 146.22 728.35 146.82 727.88 147.22C727.41 147.62 726.81 147.82 726.08 147.82C725.35 147.82 724.55 147.62 723.68 147.22C722.81 146.82 722.11 146.29 721.58 145.62C721.18 144.55 720.85 143.69 720.58 143.02C720.31 142.35 720.11 141.75 719.98 141.22C719.85 140.69 719.81 140.12 719.88 139.52C719.95 138.92 719.98 138.15 719.98 137.22C720.52 127.49 722.35 118.05 725.48 108.92C728.61 99.7901 732.11 91.0901 735.98 82.8201Z" fill="white"/>
+          <path d="M808.38 82.2198C806.91 85.1498 805.28 88.2898 803.48 91.6198C801.68 94.9498 800.05 98.2898 798.58 101.62L797.58 104.62C799.05 102.75 800.65 100.85 802.38 98.9198C804.11 96.9898 805.95 95.2198 807.88 93.6198C809.81 92.0198 811.78 90.7498 813.78 89.8198C815.78 88.8898 817.85 88.4198 819.98 88.4198C822.11 88.5498 823.85 89.3198 825.18 90.7198C826.51 92.1198 827.45 93.8498 827.98 95.9198C828.51 97.9898 828.65 100.19 828.38 102.52C828.11 104.85 827.51 107.02 826.58 109.02C824.71 112.62 822.48 115.35 819.88 117.22C817.28 119.09 813.98 120.29 809.98 120.82C808.91 120.95 808.78 121.82 809.58 123.42C810.38 125.02 811.58 126.79 813.18 128.72C814.78 130.65 816.55 132.45 818.48 134.12C820.41 135.79 822.11 136.69 823.58 136.82C825.58 137.09 827.95 135.92 830.68 133.32C833.41 130.72 836.18 127.65 838.98 124.12C841.78 120.59 844.31 117.05 846.58 113.52C848.85 109.99 850.51 107.42 851.58 105.82C852.91 105.02 854.15 104.95 855.28 105.62C856.41 106.29 856.65 107.42 855.98 109.02C854.78 111.42 853.35 114.05 851.68 116.92C850.01 119.79 848.21 122.62 846.28 125.42C844.35 128.22 842.28 130.89 840.08 133.42C837.88 135.95 835.71 138.09 833.58 139.82C832.11 141.15 830.38 141.95 828.38 142.22C826.38 142.49 824.45 142.62 822.58 142.62C820.18 142.62 817.61 141.85 814.88 140.32C812.15 138.79 809.65 136.92 807.38 134.72C805.11 132.52 803.21 130.19 801.68 127.72C800.15 125.26 799.51 123.02 799.78 121.02C799.91 119.55 800.48 118.49 801.48 117.82C802.48 117.15 803.68 116.52 805.08 115.92C806.48 115.32 807.98 114.62 809.58 113.82C811.18 113.02 812.71 111.82 814.18 110.22C814.98 109.29 815.68 108.15 816.28 106.82C816.88 105.49 817.31 104.15 817.58 102.82C817.85 101.49 817.91 100.29 817.78 99.2198C817.65 98.1498 817.24 97.3498 816.58 96.8198C815.38 96.0198 813.78 96.3198 811.78 97.7198C809.78 99.1198 807.61 101.05 805.28 103.52C802.95 105.99 800.68 108.79 798.48 111.92C796.28 115.05 794.45 117.89 792.98 120.42C792.05 124.29 791.45 128.25 791.18 132.32C790.91 136.39 791.31 140.35 792.38 144.22C792.38 145.02 792.08 145.69 791.48 146.22C790.88 146.75 790.15 147.09 789.28 147.22C788.41 147.35 787.58 147.29 786.78 147.02C785.98 146.75 785.38 146.29 784.98 145.62C783.38 141.22 782.91 136.15 783.58 130.42C784.25 124.69 785.38 118.82 786.98 112.82C788.58 106.82 790.45 101.02 792.58 95.4198C794.71 89.8198 796.51 84.9498 797.98 80.8198C798.65 78.8198 799.48 76.1198 800.48 72.7198C801.48 69.3198 802.51 65.8198 803.58 62.2198C804.65 58.6198 805.65 55.2898 806.58 52.2198C807.51 49.1498 808.25 47.0898 808.78 46.0198C809.58 44.6898 810.55 43.7898 811.68 43.3198C812.81 42.8498 813.88 42.7498 814.88 43.0198C815.88 43.2898 816.75 43.9198 817.48 44.9198C818.21 45.9198 818.51 47.1498 818.38 48.6198C818.11 49.8198 817.71 51.7498 817.18 54.4198C816.65 57.0898 815.95 60.0498 815.08 63.3198C814.21 66.5898 813.21 69.8898 812.08 73.2198C810.95 76.5498 809.71 79.5498 808.38 82.2198Z" fill="white"/>
+          <path d="M209.81 196.05C149.42 196.05 97.32 174.54 63.42 155.83C24.33 134.25 0.98 112.22 0 111.3L6.89 104.05C7.12 104.27 30.47 126.26 68.51 147.22C103.45 166.47 158.33 188.78 221.37 185.77C256.13 184.11 311.9 171.44 380.17 120.51C421.26 89.8602 447.64 59.5002 447.9 59.2002L455.47 65.7302C454.38 67.0002 428.24 97.0902 386.33 128.39C347.49 157.39 287.43 192.62 221.85 195.76C217.8 195.95 213.79 196.05 209.81 196.05Z" fill="white"/>
+          <path d="M854.14 112.5L849.05 109.71C849.68 108.56 864.86 81.3 903.95 53.96C926.83 37.95 953.19 25.28 982.31 16.29C1018.63 5.07998 1059.34 -0.390018 1103.35 0.0199824L1103.3 5.81998C1059.99 5.40998 1019.95 10.77 984.27 21.76C955.76 30.53 929.96 42.9 907.58 58.5C887.67 72.38 874.2 86.32 866.41 95.57C857.96 105.6 854.18 112.43 854.14 112.49V112.5Z" fill="white"/>
+        </g>
+        <defs>
+          <clipPath id="clip0_5457_438">
+            <rect width="1103.35" height="196.05" fill="white"/>
+          </clipPath>
+        </defs>
+      </svg>
+    </div>
+    <p>서로의 기도제목을 나누고 함께 기도해요</p>
+  </div>
+
+  <div class="view-toggle">
+    <button class="view-btn active" onclick="switchView('list')">목록</button>
+    <button class="view-btn" onclick="switchView('carousel')">한장씩</button>
+  </div>
+
+  <div class="section-header">
+    <span class="section-title">기도제목</span>
+    <span class="card-count" id="cardCount">0</span>
+  </div>
+
+  <!-- 리스트 뷰 -->
+  <div class="list-view" id="listView"></div>
+
+  <!-- 캐러셀 뷰 -->
+  <div class="carousel-view" id="carouselView">
+    <div class="carousel-wrapper">
+      <div class="carousel-track" id="carouselTrack"></div>
+    </div>
+    <div class="carousel-dots" id="carouselDots"></div>
+    <div class="carousel-nav">
+      <button class="carousel-nav-btn" onclick="carouselPrev()">&#8249;</button>
+      <button class="carousel-nav-btn" onclick="carouselNext()">&#8250;</button>
+    </div>
+  </div>
+
+  <button class="fab" onclick="openModal()">+</button>
+
+  <!-- 기도제목 등록 모달 -->
+  <div class="modal-overlay" id="addModal" onclick="closeModal(event)">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <h2>기도제목 나누기</h2>
+      <form id="prayerForm" onsubmit="submitPrayer(event)">
+        <div class="form-group">
+          <label>이름</label>
+          <input type="text" id="nameInput" placeholder="이름을 입력해주세요" required maxlength="20">
+        </div>
+        <div class="form-group">
+          <label>기도제목</label>
+          <textarea id="prayerInput" placeholder="나누고 싶은 기도제목을 작성해주세요" required maxlength="500"></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">등록하기</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- QR 모달 -->
+  <div class="modal-overlay" id="qrModal" onclick="closeQR(event)">
+    <div class="qr-modal">
+      <h2>QR코드로 공유</h2>
+      <p>이 QR코드를 스캔하면 기도제목을 볼 수 있어요</p>
+      <div id="qrcode"></div>
+      <button class="qr-close-btn" onclick="document.getElementById('qrModal').classList.remove('active')">닫기</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <script>
+    const STORAGE_KEY = 'prayer-share-data';
+    let currentView = 'list';
+    let carouselIndex = 0;
+
+    const samplePrayers = [
+      { id: '1', name: '김은혜', content: '이번 주 시험을 앞두고 있는 아이들이 평안한 마음으로 준비할 수 있도록 기도해주세요. 특별히 큰아이가 많이 긴장하고 있어요.', prayCount: 5, createdAt: '2026-04-10' },
+      { id: '2', name: '박준서', content: '새로 시작한 직장에서 잘 적응할 수 있도록 기도 부탁드립니다. 좋은 동료들을 만나게 해주시고, 맡은 일에 지혜를 주시길 기도합니다.', prayCount: 8, createdAt: '2026-04-09' },
+      { id: '3', name: '이수진', content: '어머니께서 다음 주 수술을 앞두고 계십니다. 수술이 잘 되고 빠르게 회복하실 수 있도록 기도해주세요.', prayCount: 12, createdAt: '2026-04-08' },
+      { id: '4', name: '정민호', content: '선교지에서 섬기고 있는 가정에 건강과 평안이 함께하길 기도합니다. 현지 사역이 열매 맺을 수 있도록 중보해주세요.', prayCount: 15, createdAt: '2026-04-07' },
+      { id: '5', name: '최하늘', content: '요즘 마음이 많이 지쳐있습니다. 하나님의 위로와 새 힘을 주시길 기도해주세요. 매일 말씀 묵상하며 회복할 수 있기를 원합니다.', prayCount: 9, createdAt: '2026-04-06' },
+      { id: '6', name: '한소망', content: '결혼을 준비하고 있습니다. 두 가정이 하나 되어 서로를 존중하며 아름다운 가정을 이루어갈 수 있도록 기도 부탁드려요.', prayCount: 7, createdAt: '2026-04-05' },
+      { id: '7', name: '윤성실', content: '교회 청년부 사역을 맡게 되었습니다. 청년들의 마음에 불을 지피고 함께 성장할 수 있는 공동체가 되도록 기도해주세요.', prayCount: 11, createdAt: '2026-04-04' }
+    ];
+
+    function loadPrayers() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(samplePrayers));
+        return samplePrayers;
+      }
+      return JSON.parse(stored);
+    }
+
+    function savePrayers(prayers) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(prayers));
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function buildCard(prayer) {
+      const date = new Date(prayer.createdAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+      const prayCount = prayer.prayCount || 0;
+      return `
+        <div class="prayer-card">
+          <div class="card-header">
+            <div class="card-name">${escapeHtml(prayer.name)}</div>
+            <div class="card-date">${date}</div>
+          </div>
+          <div class="card-content">${escapeHtml(prayer.content)}</div>
+          <div class="card-footer">
+            <button class="pray-btn" onclick="togglePray(this, '${prayer.id}')">
+              🙏 기도했어요 ${prayCount > 0 ? '<span>' + prayCount + '</span>' : ''}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // === 렌더링 ===
+    function renderPrayers() {
+      const prayers = loadPrayers();
+      document.getElementById('cardCount').textContent = prayers.length;
+
+      // 리스트 뷰
+      const listEl = document.getElementById('listView');
+      if (prayers.length === 0) {
+        const empty = `<div class="empty-state"><div class="icon">🕊️</div><p>아직 기도제목이 없습니다.<br>첫 번째 기도제목을 나눠주세요!</p></div>`;
+        listEl.innerHTML = empty;
+        document.getElementById('carouselTrack').innerHTML = empty;
+        document.getElementById('carouselDots').innerHTML = '';
+        return;
+      }
+
+      listEl.innerHTML = prayers.map(buildCard).join('');
+
+      // 캐러셀 뷰
+      document.getElementById('carouselTrack').innerHTML = prayers.map(buildCard).join('');
+      renderDots(prayers.length);
+      updateCarousel();
+    }
+
+    // === 뷰 전환 ===
+    function switchView(view) {
+      currentView = view;
+      document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      if (view === 'list') {
+        document.getElementById('listView').style.display = 'block';
+        document.getElementById('carouselView').style.display = 'none';
+      } else {
+        document.getElementById('listView').style.display = 'none';
+        document.getElementById('carouselView').style.display = 'block';
+        carouselIndex = 0;
+        updateCarousel();
+      }
+    }
+
+    // === 캐러셀 ===
+    function renderDots(count) {
+      const dots = document.getElementById('carouselDots');
+      dots.innerHTML = Array.from({ length: count }, (_, i) =>
+        `<div class="carousel-dot ${i === 0 ? 'active' : ''}"></div>`
+      ).join('');
+    }
+
+    function getCardStep() {
+      const track = document.getElementById('carouselTrack');
+      const cards = track.querySelectorAll('.prayer-card');
+      if (cards.length === 0) return 0;
+      return cards[0].offsetWidth + 20; // card width + gap
+    }
+
+    function updateCarousel(animate) {
+      const track = document.getElementById('carouselTrack');
+      if (animate === false) {
+        track.style.transition = 'none';
+      } else {
+        track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+      }
+      track.style.transform = `translateX(-${carouselIndex * getCardStep()}px)`;
+
+      document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i === carouselIndex);
+      });
+    }
+
+    function carouselNext() {
+      const prayers = loadPrayers();
+      if (carouselIndex < prayers.length - 1) {
+        carouselIndex++;
+        updateCarousel();
+      }
+    }
+
+    function carouselPrev() {
+      if (carouselIndex > 0) {
+        carouselIndex--;
+        updateCarousel();
+      }
+    }
+
+    // 스와이프 with drag
+    let touchStartX = 0;
+    let touchDragging = false;
+    let dragOffset = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      if (currentView !== 'carousel') return;
+      touchStartX = e.touches[0].clientX;
+      touchDragging = true;
+      dragOffset = 0;
+      const track = document.getElementById('carouselTrack');
+      track.style.transition = 'none';
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      if (!touchDragging || currentView !== 'carousel') return;
+      dragOffset = touchStartX - e.touches[0].clientX;
+      const track = document.getElementById('carouselTrack');
+      const base = carouselIndex * getCardStep();
+      track.style.transform = `translateX(-${base + dragOffset}px)`;
+    });
+
+    document.addEventListener('touchend', (e) => {
+      if (!touchDragging || currentView !== 'carousel') return;
+      touchDragging = false;
+      if (Math.abs(dragOffset) > 60) {
+        if (dragOffset > 0) carouselNext();
+        else carouselPrev();
+      } else {
+        updateCarousel();
+      }
+    });
+
+    // === 기도제목 등록 ===
+    function submitPrayer(e) {
+      e.preventDefault();
+      const name = document.getElementById('nameInput').value.trim();
+      const content = document.getElementById('prayerInput').value.trim();
+      if (!name || !content) return;
+
+      const prayers = loadPrayers();
+      prayers.unshift({
+        id: Date.now().toString(),
+        name, content, prayCount: 0,
+        createdAt: new Date().toISOString().split('T')[0]
+      });
+      savePrayers(prayers);
+
+      document.getElementById('nameInput').value = '';
+      document.getElementById('prayerInput').value = '';
+      document.getElementById('addModal').classList.remove('active');
+      renderPrayers();
+      showToast('기도제목이 등록되었습니다 🙏');
+    }
+
+    function togglePray(btn, id) {
+      if (btn.classList.contains('prayed')) return;
+      btn.classList.add('prayed');
+      const prayers = loadPrayers();
+      const prayer = prayers.find(p => p.id === id);
+      if (prayer) {
+        prayer.prayCount = (prayer.prayCount || 0) + 1;
+        savePrayers(prayers);
+        renderPrayers();
+      }
+    }
+
+    // === 모달 ===
+    function openModal() {
+      document.getElementById('addModal').classList.add('active');
+      document.getElementById('nameInput').focus();
+    }
+
+    function closeModal(e) {
+      if (e.target === e.currentTarget)
+        document.getElementById('addModal').classList.remove('active');
+    }
+
+    // === QR ===
+    let qrGenerated = false;
+    function showQR() {
+      document.getElementById('qrModal').classList.add('active');
+      if (!qrGenerated) {
+        new QRCode(document.getElementById("qrcode"), {
+          text: window.location.href, width: 200, height: 200,
+          colorDark: "#6BB89A", colorLight: "#ffffff",
+        });
+        qrGenerated = true;
+      }
+    }
+    function closeQR(e) {
+      if (e.target === e.currentTarget)
+        document.getElementById('qrModal').classList.remove('active');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    renderPrayers();
+  </script>
+</body>
+</html>
