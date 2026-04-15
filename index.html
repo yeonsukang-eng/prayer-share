@@ -672,7 +672,7 @@
       document.getElementById('qrModal').classList.add('active');
       if (!qrGenerated) {
         new QRCode(document.getElementById("qrcode"), {
-          text: window.location.origin + window.location.pathname, width: 200, height: 200,
+          text: "https://prayer-share-seven.vercel.app/", width: 200, height: 200,
           colorDark: "#6BB89A", colorLight: "#ffffff",
         });
         qrGenerated = true;
