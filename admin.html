@@ -107,6 +107,11 @@
       padding: 20px 24px;
     }
 
+    @media (max-width: 480px) {
+      .admin-content { padding: 20px 16px; }
+      .admin-header { padding: 24px 16px 20px; }
+    }
+
     /* Add Form */
     .add-form {
       background: white;
@@ -1049,7 +1054,11 @@
           return;
         }
         db.ref('prayers/' + id).update({ name: newName, items: newItems, content: null })
-          .then(() => showToast('수정되었습니다'))
+          .then(() => {
+            card.classList.remove('editing');
+            panel.remove();
+            showToast('수정되었습니다');
+          })
           .catch(err => showToast('수정 실패: ' + err.message));
       });
     }
