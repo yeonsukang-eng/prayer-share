@@ -118,19 +118,21 @@
       overflow-x: hidden;
       overflow-y: visible;
       position: relative;
-      padding: 8px 32px 16px;
+      padding: 8px 9% 16px;
     }
 
     .carousel-track {
       display: flex;
-      gap: 20px;
-      transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      gap: 16px;
+      transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
     }
 
     .carousel-track .prayer-card {
       width: 100%;
       min-width: 100%;
       min-height: 280px;
+      opacity: 0.35;
+      transform: scale(0.92);
       background: white;
       border-radius: 20px;
       padding: 32px 24px;
@@ -138,7 +140,12 @@
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
-      transition: transform 0.35s ease, opacity 0.35s ease;
+      transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.5s ease;
+    }
+
+    .carousel-track .prayer-card.is-active {
+      opacity: 1;
+      transform: scale(1);
     }
 
     .carousel-track .card-content {
@@ -586,7 +593,7 @@
       const track = document.getElementById('carouselTrack');
       const cards = track.querySelectorAll('.prayer-card');
       if (cards.length === 0) return 0;
-      return cards[0].offsetWidth + 20;
+      return cards[0].offsetWidth + 16;
     }
 
     function updateCarousel(animate) {
@@ -594,9 +601,13 @@
       if (animate === false) {
         track.style.transition = 'none';
       } else {
-        track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+        track.style.transition = 'transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1)';
       }
       track.style.transform = `translateX(-${carouselIndex * getCardStep()}px)`;
+
+      track.querySelectorAll('.prayer-card').forEach((card, i) => {
+        card.classList.toggle('is-active', i === carouselIndex);
+      });
 
       document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
         dot.classList.toggle('active', i === carouselIndex);
