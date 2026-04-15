@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기도나눔 - 관리자</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background: #f5f5f5;
+      color: #1a2e1a;
+      min-height: 100vh;
+    }
+
+    /* Login Screen */
+    .login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: linear-gradient(180deg, #8ECFB8, #7AC4AA);
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 28px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .login-card h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a2e1a;
+      margin-bottom: 8px;
+    }
+
+    .login-card p {
+      font-size: 14px;
+      color: #88a88e;
+      margin-bottom: 28px;
+    }
+
+    .login-card input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #b5dece;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #1a2e1a;
+      background: #eef7f2;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .login-card input:focus {
+      outline: none;
+      border-color: #7AC4AA;
+    }
+
+    .login-error {
+      color: #e74c3c;
+      font-size: 13px;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    /* Admin Screen */
+    .admin-screen {
+      display: none;
+    }
+
+    .admin-header {
+      background: linear-gradient(135deg, #8ECFB8, #7AC4AA);
+      color: white;
+      padding: 24px 24px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .admin-header h1 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .admin-content {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    /* Add Form */
+    .add-form {
+      background: white;
+      border-radius: 16px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .add-form h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a2e1a;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7AC4AA;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #b5dece;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #1a2e1a;
+      background: #eef7f2;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #7AC4AA;
+    }
+
+    .form-group textarea {
+      height: 80px;
+      resize: vertical;
+    }
+
+    .item-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .item-row .item-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #eef7f2;
+      color: #7AC4AA;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .item-row textarea {
+      flex: 1;
+    }
+
+    .item-row .remove-item-btn {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      margin-top: 6px;
+      border-radius: 8px;
+      background: #fef2f2;
+      border: none;
+      color: #e74c3c;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .add-item-btn {
+      width: 100%;
+      padding: 10px;
+      background: #eef7f2;
+      color: #7AC4AA;
+      border: 1.5px dashed #b5dece;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 14px;
+    }
+
+    .add-item-btn:hover { background: #e0f0e8; }
+
+    /* Position controls */
+    .pos-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .pos-btn {
+      width: 28px;
+      height: 24px;
+      border: 1px solid #b5dece;
+      background: #eef7f2;
+      color: #3a8a6a;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .pos-btn:hover { background: #dff0e7; }
+    .pos-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .pos-input-row {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      margin-top: 2px;
+    }
+
+    .pos-input {
+      width: 44px;
+      padding: 3px 4px;
+      border: 1px solid #b5dece;
+      border-radius: 6px;
+      font-size: 12px;
+      text-align: center;
+      font-family: inherit;
+      background: white;
+    }
+
+    .pos-go-btn {
+      padding: 3px 6px;
+      background: #7AC4AA;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .admin-card-items {
+      font-size: 14px;
+      color: #3a4a3a;
+      line-height: 1.55;
+      word-break: keep-all;
+    }
+
+    .admin-card-preview {
+      display: none;
+      font-size: 14px;
+      color: #3a4a3a;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .admin-card-preview .more-count {
+      display: inline-block;
+      margin-left: 6px;
+      background: #EEF5EE;
+      color: #4F8A6E;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 640px) {
+      .admin-card-items { display: none; }
+      .admin-card-preview { display: block; }
+    }
+
+    .admin-card-items .item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .admin-card-items .item-n {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #EEF5EE;
+      color: #4F8A6E;
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 1;
+      margin-top: 1px;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 30px;
+      border-radius: 8px;
+      border: none;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .edit-btn { background: #eef7f2; color: #3a8a6a; }
+    .edit-btn:hover { background: #dff0e7; }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #8ECFB8, #7AC4AA);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Prayer List */
+    .prayer-list h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a2e1a;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .list-count {
+      background: #eef7f2;
+      color: #7AC4AA;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .admin-card {
+      background: white;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+
+    .drag-handle {
+      flex-shrink: 0;
+      width: 28px;
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b5dece;
+      font-size: 18px;
+      cursor: grab;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .drag-handle:active { cursor: grabbing; }
+
+    .admin-card.dragging {
+      opacity: 0.4;
+    }
+
+    .admin-card {
+      position: relative;
+    }
+
+    .admin-card.drop-above::before,
+    .admin-card.drop-below::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #7AC4AA;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    .admin-card.drop-above::before { top: -6px; }
+    .admin-card.drop-below::after { bottom: -6px; }
+
+    .list-hint {
+      font-size: 12px;
+      color: #88a88e;
+      margin-bottom: 10px;
+    }
+
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .list-header h2 { margin-bottom: 0 !important; }
+
+    .reorder-toggle {
+      padding: 7px 14px;
+      background: #eef7f2;
+      color: #3a8a6a;
+      border: 1.5px solid #b5dece;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .reorder-toggle:hover { background: #dff0e7; }
+
+    .reorder-toggle.active {
+      background: #7AC4AA;
+      color: white;
+      border-color: #7AC4AA;
+    }
+
+    .card-number {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #eef7f2;
+      color: #3a8a6a;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Drag handle (right side, hamburger icon) */
+    .drag-handle-right {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #88a88e;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .drag-handle-right:active { cursor: grabbing; }
+
+    .admin-screen.reorder-mode .drag-handle-right { display: flex; }
+    .admin-screen.reorder-mode .card-actions { display: none; }
+    .admin-screen.reorder-mode .admin-card { cursor: move; }
+
+    /* Edit mode (inline in card) */
+    .admin-card.editing { display: block; }
+    .admin-card.editing .admin-card-body,
+    .admin-card.editing .card-actions,
+    .admin-card.editing .card-number,
+    .admin-card.editing .drag-handle-right { display: none; }
+
+    .edit-panel {
+      padding: 4px 2px;
+    }
+
+    .edit-panel .form-group { margin-bottom: 12px; }
+
+    .edit-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .edit-actions button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    .save-edit-btn {
+      background: linear-gradient(135deg, #8ECFB8, #7AC4AA);
+      color: white;
+    }
+
+    .cancel-edit-btn {
+      background: #f0f0f0;
+      color: #666;
+    }
+
+    .admin-card-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .admin-card-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a2e1a;
+      margin-bottom: 4px;
+    }
+
+    .admin-card-content {
+      font-size: 14px;
+      color: #3a4a3a;
+      line-height: 1.5;
+      word-break: keep-all;
+    }
+
+    .admin-card-meta {
+      font-size: 12px;
+      color: #88a88e;
+      margin-top: 6px;
+    }
+
+    .delete-btn {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #fef2f2;
+      border: none;
+      color: #e74c3c;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .delete-btn:hover {
+      background: #fde8e8;
+    }
+
+    .empty-list {
+      text-align: center;
+      padding: 40px 20px;
+      color: #88a88e;
+      font-size: 14px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Confirm Modal */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .confirm-overlay.show { display: flex; }
+    .confirm-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px 20px;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+    .confirm-message {
+      font-size: 15px;
+      color: #1a2e1a;
+      line-height: 1.55;
+      margin-bottom: 22px;
+      word-break: keep-all;
+    }
+    .confirm-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .confirm-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .confirm-btn.cancel {
+      background: #EEF5EE;
+      color: #4F8A6E;
+    }
+    .confirm-btn.ok {
+      background: linear-gradient(135deg, #8ECFB8, #7AC4AA);
+      color: #fff;
+    }
+    .confirm-btn:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+
+  <!-- 로그인 화면 -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <h1>관리자 로그인</h1>
+      <p>기도나눔 관리 페이지입니다</p>
+      <form onsubmit="handleLogin(event)">
+        <input type="password" id="passwordInput" placeholder="비밀번호를 입력하세요" autofocus>
+        <div class="login-error" id="loginError">비밀번호가 올바르지 않습니다</div>
+        <button type="submit" class="submit-btn">로그인</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 관리자 화면 -->
+  <div class="admin-screen" id="adminScreen">
+    <div class="admin-header">
+      <h1>기도나눔 관리</h1>
+      <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+    </div>
+
+    <div class="admin-content">
+      <!-- 기도제목 등록 폼 -->
+      <div class="add-form">
+        <h2>기도제목 등록</h2>
+        <form id="prayerForm" onsubmit="submitPrayer(event)">
+          <div class="form-group">
+            <label>이름</label>
+            <input type="text" id="nameInput" placeholder="이름을 입력해주세요" required maxlength="20">
+          </div>
+          <div class="form-group">
+            <label>기도제목 (여러 개 추가 가능)</label>
+            <div id="itemsContainer"></div>
+            <button type="button" class="add-item-btn" onclick="addItemInput()">＋ 기도제목 추가</button>
+          </div>
+          <button type="submit" class="submit-btn" id="submitBtn">등록하기</button>
+        </form>
+      </div>
+
+      <!-- 등록된 기도제목 목록 -->
+      <div class="prayer-list">
+        <div class="list-header">
+          <h2>등록된 기도제목 <span class="list-count" id="listCount">0</span></h2>
+          <div style="display:flex; gap:8px;">
+            <button class="reorder-toggle" onclick="resetPrayCounts()">기도했어요 초기화</button>
+            <button class="reorder-toggle" id="reorderToggle" onclick="toggleReorderMode()">위치편집</button>
+          </div>
+        </div>
+        <div class="list-hint" id="listHint"></div>
+        <div id="prayerListContainer">
+          <div class="empty-list">등록된 기도제목이 없습니다</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <div class="confirm-message" id="confirmMessage"></div>
+      <div class="confirm-actions">
+        <button class="confirm-btn cancel" id="confirmCancel">취소</button>
+        <button class="confirm-btn ok" id="confirmOk">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <script>
+    // ============================================
+    // Firebase 설정 - index.html과 동일한 값을 사용하세요
+    // ============================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBB1R5ikVGKz2YmMKueqDQZw5FyYjAxpx0",
+      authDomain: "prayer-share-d9850.firebaseapp.com",
+      databaseURL: "https://prayer-share-d9850-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "prayer-share-d9850",
+      storageBucket: "prayer-share-d9850.firebasestorage.app",
+      messagingSenderId: "218015044662",
+      appId: "1:218015044662:web:3d23bc74ac9acc74e0b51f7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ============================================
+    // 관리자 비밀번호 - 원하는 비밀번호로 변경하세요
+    // ============================================
+    const ADMIN_PASSWORD = '1234';
+
+    // === 로그인 ===
+    function handleLogin(e) {
+      e.preventDefault();
+      const pw = document.getElementById('passwordInput').value;
+      if (pw === ADMIN_PASSWORD) {
+        sessionStorage.setItem('admin-auth', 'true');
+        showAdmin();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('admin-auth');
+      document.getElementById('adminScreen').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('passwordInput').value = '';
+    }
+
+    function showAdmin() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminScreen').style.display = 'block';
+    }
+
+    // 세션 유지
+    if (sessionStorage.getItem('admin-auth') === 'true') {
+      showAdmin();
+    }
+
+    // === 기도제목 입력칸 동적 추가 ===
+    function renumberItemInputs() {
+      const container = document.getElementById('itemsContainer');
+      const rows = container.querySelectorAll('.item-row');
+      rows.forEach((row, i) => {
+        row.querySelector('.item-num').textContent = i + 1;
+        const removeBtn = row.querySelector('.remove-item-btn');
+        removeBtn.style.display = rows.length > 1 ? 'block' : 'none';
+      });
+    }
+
+    function addItemInput(value) {
+      const container = document.getElementById('itemsContainer');
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.innerHTML = `
+        <div class="item-num"></div>
+        <textarea placeholder="기도제목을 작성해주세요" maxlength="500"></textarea>
+        <button type="button" class="remove-item-btn" title="삭제">✕</button>
+      `;
+      if (value) row.querySelector('textarea').value = value;
+      row.querySelector('.remove-item-btn').addEventListener('click', () => {
+        row.remove();
+        renumberItemInputs();
+      });
+      container.appendChild(row);
+      renumberItemInputs();
+    }
+
+    // 초기 입력칸 1개
+    addItemInput();
+
+    // === 기도제목 등록 ===
+    function submitPrayer(e) {
+      e.preventDefault();
+      const name = document.getElementById('nameInput').value.trim();
+      const items = Array.from(document.querySelectorAll('#itemsContainer textarea'))
+        .map(t => t.value.trim())
+        .filter(Boolean);
+      if (!name || items.length === 0) {
+        showToast('이름과 기도제목을 입력해주세요');
+        return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+
+      const newRef = db.ref('prayers').push();
+      newRef.set({
+        name,
+        items,
+        prayCount: 0,
+        createdAt: new Date().toISOString().split('T')[0],
+        order: Date.now()
+      }).then(() => {
+        document.getElementById('nameInput').value = '';
+        document.getElementById('itemsContainer').innerHTML = '';
+        addItemInput();
+        btn.disabled = false;
+        showToast('기도제목이 등록되었습니다');
+      }).catch((err) => {
+        btn.disabled = false;
+        showToast('등록 실패: ' + err.message);
+      });
+    }
+
+    // 하위호환: 과거 content(string) → items 배열 변환
+    function getItems(p) {
+      if (Array.isArray(p.items)) return p.items.filter(Boolean);
+      if (typeof p.content === 'string' && p.content.trim()) return [p.content];
+      return [];
+    }
+
+    // === 삭제 ===
+    async function deletePrayer(id, name) {
+      if (!await showConfirm(`"${name}" 님의 기도제목을 삭제하시겠습니까?`)) return;
+      db.ref('prayers/' + id).remove()
+        .then(() => showToast('삭제되었습니다'))
+        .catch((err) => showToast('삭제 실패: ' + err.message));
+    }
+
+    // === 커스텀 확인 팝업 ===
+    function showConfirm(message) {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('confirmOverlay');
+        const msg = document.getElementById('confirmMessage');
+        const ok = document.getElementById('confirmOk');
+        const cancel = document.getElementById('confirmCancel');
+        msg.textContent = message;
+        overlay.classList.add('show');
+        const cleanup = (result) => {
+          overlay.classList.remove('show');
+          ok.onclick = null;
+          cancel.onclick = null;
+          overlay.onclick = null;
+          resolve(result);
+        };
+        ok.onclick = () => cleanup(true);
+        cancel.onclick = () => cleanup(false);
+        overlay.onclick = (e) => { if (e.target === overlay) cleanup(false); };
+      });
+    }
+
+    // === 기도했어요 초기화 ===
+    async function resetPrayCounts() {
+      if (!await showConfirm('정말로 초기화 하시겠습니까?')) return;
+      const updates = {};
+      currentPrayers.forEach(p => { updates[p.id + '/prayCount'] = 0; });
+      db.ref('prayers').update(updates)
+        .then(() => showToast('기도했어요가 초기화되었습니다'))
+        .catch((err) => showToast('초기화 실패: ' + err.message));
+    }
+
+    // === 실시간 목록 렌더링 ===
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    let currentPrayers = [];
+    let isReordering = false;
+
+    db.ref('prayers').on('value', (snapshot) => {
+      if (isReordering) return;
+      const container = document.getElementById('prayerListContainer');
+      const prayers = [];
+      snapshot.forEach((child) => {
+        prayers.push({ id: child.key, ...child.val() });
+      });
+      // order 내림차순, 없으면 createdAt 기준 fallback
+      prayers.sort((a, b) => {
+        const ao = a.order != null ? a.order : new Date(a.createdAt).getTime();
+        const bo = b.order != null ? b.order : new Date(b.createdAt).getTime();
+        return bo - ao;
+      });
+      currentPrayers = prayers;
+
+      document.getElementById('listCount').textContent = prayers.length;
+
+      if (prayers.length === 0) {
+        container.innerHTML = '<div class="empty-list">등록된 기도제목이 없습니다</div>';
+        return;
+      }
+
+      container.innerHTML = prayers.map((p, idx) => {
+        const date = new Date(p.createdAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+        const items = getItems(p);
+        const itemsHtml = items.map((t, i) =>
+          `<div class="item"><span class="item-n">${i + 1}</span><span>${escapeHtml(t)}</span></div>`
+        ).join('');
+        const pos = idx + 1;
+        return `
+          <div class="admin-card" draggable="true" data-id="${p.id}">
+            <div class="card-number">${pos}</div>
+            <div class="admin-card-body">
+              <div class="admin-card-name">${escapeHtml(p.name)}</div>
+              <div class="admin-card-preview">${escapeHtml(items[0] || '')}${items.length > 1 ? `<span class="more-count">+${items.length - 1}</span>` : ''}</div>
+              <div class="admin-card-items">${itemsHtml}</div>
+              <div class="admin-card-meta">${date} · 기도 ${p.prayCount || 0}회</div>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn edit-btn" onclick="openEdit('${p.id}')" title="수정">✎</button>
+              <button class="action-btn delete-btn" onclick="deletePrayer('${p.id}', '${escapeHtml(p.name)}')" title="삭제">✕</button>
+            </div>
+            <div class="drag-handle-right" title="드래그하여 순서 변경">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="5" width="14" height="1.8" rx="0.9" fill="currentColor"/>
+                <rect x="3" y="9.1" width="14" height="1.8" rx="0.9" fill="currentColor"/>
+                <rect x="3" y="13.2" width="14" height="1.8" rx="0.9" fill="currentColor"/>
+              </svg>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      attachDragHandlers();
+    });
+
+    // === 위치편집 모드 ===
+    let reorderMode = false;
+    function toggleReorderMode() {
+      reorderMode = !reorderMode;
+      const screen = document.getElementById('adminScreen');
+      const btn = document.getElementById('reorderToggle');
+      const hint = document.getElementById('listHint');
+      if (reorderMode) {
+        screen.classList.add('reorder-mode');
+        btn.classList.add('active');
+        btn.textContent = '완료';
+        hint.textContent = '우측의 ≡ 아이콘을 드래그하여 순서를 변경하세요';
+      } else {
+        screen.classList.remove('reorder-mode');
+        btn.classList.remove('active');
+        btn.textContent = '위치편집';
+        hint.textContent = '';
+      }
+    }
+
+    // === 수정 (인라인 편집) ===
+    function openEdit(id) {
+      const card = document.querySelector(`.admin-card[data-id="${id}"]`);
+      const p = currentPrayers.find(x => x.id === id);
+      if (!card || !p) return;
+      const items = getItems(p);
+
+      card.classList.add('editing');
+      const panel = document.createElement('div');
+      panel.className = 'edit-panel';
+      panel.innerHTML = `
+        <div class="form-group">
+          <label>이름</label>
+          <input type="text" class="edit-name" value="${escapeHtml(p.name)}" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label>기도제목 (여러 개 추가 가능)</label>
+          <div class="edit-items-container"></div>
+          <button type="button" class="add-item-btn edit-add-btn">＋ 기도제목 추가</button>
+        </div>
+        <div class="edit-actions">
+          <button type="button" class="cancel-edit-btn">취소</button>
+          <button type="button" class="save-edit-btn">저장</button>
+        </div>
+      `;
+      card.appendChild(panel);
+
+      const itemsContainer = panel.querySelector('.edit-items-container');
+      function renum() {
+        const rows = itemsContainer.querySelectorAll('.item-row');
+        rows.forEach((row, i) => {
+          row.querySelector('.item-num').textContent = i + 1;
+          row.querySelector('.remove-item-btn').style.display = rows.length > 1 ? 'block' : 'none';
+        });
+      }
+      function addRow(value) {
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.innerHTML = `
+          <div class="item-num"></div>
+          <textarea placeholder="기도제목을 작성해주세요" maxlength="500"></textarea>
+          <button type="button" class="remove-item-btn" title="삭제">✕</button>
+        `;
+        if (value) row.querySelector('textarea').value = value;
+        row.querySelector('.remove-item-btn').addEventListener('click', () => {
+          row.remove();
+          renum();
+        });
+        itemsContainer.appendChild(row);
+        renum();
+      }
+      (items.length ? items : ['']).forEach(addRow);
+
+      panel.querySelector('.edit-add-btn').addEventListener('click', () => addRow(''));
+      panel.querySelector('.cancel-edit-btn').addEventListener('click', () => {
+        card.classList.remove('editing');
+        panel.remove();
+      });
+      panel.querySelector('.save-edit-btn').addEventListener('click', () => {
+        const newName = panel.querySelector('.edit-name').value.trim();
+        const newItems = Array.from(panel.querySelectorAll('textarea'))
+          .map(t => t.value.trim()).filter(Boolean);
+        if (!newName || newItems.length === 0) {
+          showToast('이름과 기도제목을 입력해주세요');
+          return;
+        }
+        db.ref('prayers/' + id).update({ name: newName, items: newItems, content: null })
+          .then(() => showToast('수정되었습니다'))
+          .catch(err => showToast('수정 실패: ' + err.message));
+      });
+    }
+
+    // === 드래그 앤 드롭 ===
+    let dragSrcId = null;
+
+    function attachDragHandlers() {
+      const cards = document.querySelectorAll('.admin-card[draggable="true"]');
+      cards.forEach(card => {
+        card.addEventListener('dragstart', onDragStart);
+        card.addEventListener('dragover', onDragOver);
+        card.addEventListener('dragleave', onDragLeave);
+        card.addEventListener('drop', onDrop);
+        card.addEventListener('dragend', onDragEnd);
+      });
+    }
+
+    function onDragStart(e) {
+      if (!reorderMode) { e.preventDefault(); return false; }
+      dragSrcId = this.dataset.id;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', dragSrcId);
+    }
+
+    function clearDropIndicators() {
+      document.querySelectorAll('.admin-card.drop-above, .admin-card.drop-below')
+        .forEach(c => c.classList.remove('drop-above', 'drop-below'));
+    }
+
+    function onDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (this.dataset.id === dragSrcId) return false;
+      clearDropIndicators();
+      const rect = this.getBoundingClientRect();
+      const isAbove = (e.clientY - rect.top) < rect.height / 2;
+      this.classList.add(isAbove ? 'drop-above' : 'drop-below');
+      return false;
+    }
+
+    function onDragLeave(e) {
+      // only clear if leaving this card entirely
+      if (!this.contains(e.relatedTarget)) {
+        this.classList.remove('drop-above', 'drop-below');
+      }
+    }
+
+    function onDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const isAbove = this.classList.contains('drop-above');
+      this.classList.remove('drop-above', 'drop-below');
+      const targetId = this.dataset.id;
+      if (!dragSrcId || dragSrcId === targetId) return;
+
+      const fromIdx = currentPrayers.findIndex(p => p.id === dragSrcId);
+      let toIdx = currentPrayers.findIndex(p => p.id === targetId);
+      if (fromIdx < 0 || toIdx < 0) return;
+
+      const [moved] = currentPrayers.splice(fromIdx, 1);
+      // recompute toIdx since splice may have shifted it
+      toIdx = currentPrayers.findIndex(p => p.id === targetId);
+      const insertIdx = isAbove ? toIdx : toIdx + 1;
+      currentPrayers.splice(insertIdx, 0, moved);
+
+      reorderLocally();
+      persistOrder();
+    }
+
+    function onDragEnd() {
+      this.classList.remove('dragging');
+      clearDropIndicators();
+      dragSrcId = null;
+    }
+
+    function reorderLocally() {
+      const container = document.getElementById('prayerListContainer');
+      const byId = {};
+      container.querySelectorAll('.admin-card[draggable="true"]').forEach(el => {
+        byId[el.dataset.id] = el;
+      });
+      currentPrayers.forEach((p, i) => {
+        const el = byId[p.id];
+        container.appendChild(el);
+        const num = el.querySelector('.card-number');
+        if (num) num.textContent = i + 1;
+      });
+    }
+
+    function persistOrder() {
+      isReordering = true;
+      const total = currentPrayers.length;
+      const updates = {};
+      currentPrayers.forEach((p, idx) => {
+        const newOrder = (total - idx) * 1000;
+        updates[p.id + '/order'] = newOrder;
+        p.order = newOrder;
+      });
+      db.ref('prayers').update(updates)
+        .then(() => {
+          isReordering = false;
+          showToast('순서가 변경되었습니다');
+        })
+        .catch((err) => {
+          isReordering = false;
+          showToast('순서 변경 실패: ' + err.message);
+        });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+  </script>
+</body>
+</html>

@@ -9,7 +9,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-      background: linear-gradient(180deg, #8ECFB8, #7AC4AA);
+      background: linear-gradient(180deg, #8ECFB8, #ffffff);
       color: #1a2e1a;
       min-height: 100vh;
     }
@@ -64,7 +64,7 @@
     .section-header {
       max-width: 480px;
       margin: 0 auto;
-      padding: 8px 20px;
+      padding: 8px 24px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -89,7 +89,7 @@
     .list-view {
       max-width: 480px;
       margin: 0 auto;
-      padding: 8px 16px 100px;
+      padding: 8px 24px 100px;
     }
 
     .list-view .prayer-card {
@@ -111,7 +111,7 @@
     .carousel-wrapper {
       overflow: hidden;
       position: relative;
-      padding: 0 24px;
+      padding: 0 32px;
     }
 
     .carousel-track {
@@ -197,7 +197,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
 
     .card-name {
@@ -217,6 +217,31 @@
       color: #3a4a3a;
       word-break: keep-all;
       overflow-wrap: break-word;
+    }
+
+    .card-content .prayer-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    .card-content .prayer-item:last-child { margin-bottom: 0; }
+
+    .card-content .prayer-item .num {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #EEF5EE;
+      color: #4F8A6E;
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 1;
+      margin-top: 1px;
     }
 
     .card-footer {
@@ -256,30 +281,28 @@
     .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
     .empty-state p { font-size: 15px; line-height: 1.6; }
 
-    /* FAB */
-    .fab {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: white;
-      color: #6BB89A;
-      border: none;
-      font-size: 28px;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.2s;
-      z-index: 90;
+    /* Loading State */
+    .loading-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: rgba(255,255,255,0.8);
     }
 
-    .fab:hover { transform: scale(1.08); }
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
 
-    /* Modal */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* QR Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -292,83 +315,6 @@
 
     .modal-overlay.active { display: flex; }
 
-    .modal {
-      background: white;
-      width: 100%;
-      max-width: 480px;
-      border-radius: 24px 24px 0 0;
-      padding: 24px 20px 40px;
-      animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
-
-    .modal-handle {
-      width: 40px;
-      height: 4px;
-      background: #ddd;
-      border-radius: 2px;
-      margin: 0 auto 20px;
-    }
-
-    .modal h2 {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: #1a2e1a;
-    }
-
-    .form-group { margin-bottom: 16px; }
-
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #7AC4AA;
-      margin-bottom: 6px;
-    }
-
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1.5px solid #b5dece;
-      border-radius: 12px;
-      font-size: 15px;
-      font-family: inherit;
-      color: #1a2e1a;
-      background: #eef7f2;
-      transition: border-color 0.2s;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #7AC4AA;
-    }
-
-    .form-group textarea { height: 120px; resize: none; }
-
-    .submit-btn {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #8ECFB8, #7AC4AA);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .submit-btn:hover { opacity: 0.9; }
-    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* QR Modal */
     .qr-modal {
       background: white;
       width: 100%;
@@ -400,21 +346,46 @@
       cursor: pointer;
     }
 
+    .qr-close-btn:hover { background: #dceee4; }
+
+    /* Share Button */
+    .share-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: white;
+      color: #6BB89A;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+      z-index: 90;
+    }
+
+    .share-btn:hover { transform: scale(1.08); }
+
     /* Toast */
     .toast {
       position: fixed;
-      bottom: 90px;
+      bottom: 100px;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,0.8);
       color: white;
       padding: 12px 24px;
       border-radius: 12px;
       font-size: 14px;
       opacity: 0;
       transition: all 0.3s;
-      z-index: 300;
-      white-space: nowrap;
+      z-index: 999;
+      pointer-events: none;
     }
 
     .toast.show {
@@ -424,10 +395,9 @@
   </style>
 </head>
 <body>
-
   <div class="header">
     <div class="header-logo">
-      <svg width="320" viewBox="0 0 1104 197" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="200" viewBox="0 0 1104 197" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clip-path="url(#clip0_5457_438)">
           <path d="M439 82.0201C438.6 77.4901 439.43 73.0501 441.5 68.7201C443.57 64.3901 446.53 60.3201 450.4 56.5201C454.27 52.7201 458.7 49.2501 463.7 46.1201C468.7 42.9901 473.9 40.3401 479.3 38.1901C484.7 36.0301 490 34.4301 495.2 33.3901C500.4 32.3501 505.13 31.9601 509.4 32.2201C511.93 32.4901 514.6 33.0201 517.4 33.8201C520.2 34.6201 522.8 35.8201 525.2 37.4101C527.6 39.0101 529.67 40.9701 531.4 43.3001C533.13 45.6301 534.2 48.3901 534.6 51.5801C535.13 56.2401 534.07 60.7701 531.4 65.1601C528.73 69.5501 525.5 73.6101 521.7 77.3401C517.9 81.0701 514.07 84.3301 510.2 87.1201C506.33 89.9201 503.53 92.1101 501.8 93.7101C505.8 94.3801 509.73 95.6401 513.6 97.5001C518.93 100.43 521.6 104.35 521.6 109.28C521.6 113.94 520.17 118.63 517.3 123.36C514.43 128.08 510.7 132.41 506.1 136.34C501.5 140.27 496.33 143.49 490.6 146.02C484.87 148.55 479.13 149.88 473.4 150.01C467.4 150.28 463.2 149.04 460.8 146.31C458.4 143.58 457.07 140.08 456.8 135.81C456.13 129.41 456.47 123.14 457.8 117.01C459.13 110.88 460.9 104.78 463.1 98.7101C465.3 92.6401 467.67 86.5801 470.2 80.5101C472.73 74.4401 474.93 68.3401 476.8 62.2101C477.2 60.2101 478.03 58.7801 479.3 57.9101C480.57 57.0401 481.9 56.6801 483.3 56.8101C484.7 56.9401 485.9 57.5801 486.9 58.7101C487.9 59.8401 488.33 61.4101 488.2 63.4101C487.8 64.8801 486.43 68.0401 484.1 72.9101C481.77 77.7801 479.27 83.4401 476.6 89.9101C473.93 96.3801 471.33 103.24 468.8 110.51C466.26 117.78 464.6 124.61 463.8 131.01C463.53 133.68 463.63 135.78 464.1 137.31C464.57 138.84 465.27 140.04 466.2 140.91C467.13 141.78 468.23 142.34 469.5 142.61C470.77 142.88 472.13 143.08 473.6 143.21C477.33 143.21 481.43 142.08 485.9 139.81C490.37 137.54 494.57 134.68 498.5 131.21C502.43 127.75 505.7 123.94 508.3 119.81C510.9 115.68 512.2 111.74 512.2 108.01C512.2 106.68 511.5 105.34 510.1 104.01C508.7 102.68 507.27 101.74 505.8 101.21C503.53 100.14 500.93 99.8401 498 100.31C495.07 100.78 492.4 101.54 490 102.61C489.2 103.01 488.47 103.44 487.8 103.91C487.13 104.38 486.47 104.81 485.8 105.21C485.53 105.21 485.3 105.28 485.1 105.41C484.9 105.54 484.47 105.74 483.8 106.01C483.67 106.01 483.53 106.04 483.4 106.11C483.27 106.18 483.13 106.21 483 106.21C481.53 106.48 480.33 106.38 479.4 105.91C478.47 105.44 477.8 104.74 477.4 103.81C477 102.88 476.97 101.91 477.3 100.91C477.63 99.9101 478.4 99.0801 479.6 98.4101C480 98.4101 480.8 98.1401 482 97.6101C483.2 97.0801 484 96.7401 484.4 96.6101C486.93 95.1401 489.47 93.3801 492 91.3101C494.53 89.2401 496.93 87.2801 499.2 85.4101C503.47 81.8101 507.3 78.3101 510.7 74.9101C514.1 71.5101 517.4 67.6101 520.6 63.2101C520.87 62.9401 521.27 62.2801 521.8 61.2101C522.33 60.1401 522.9 58.9101 523.5 57.5101C524.1 56.1101 524.6 54.6401 525 53.1101C525.4 51.5801 525.53 50.2101 525.4 49.0101C525.4 47.6801 524.9 46.4801 523.9 45.4101C522.9 44.3401 521.67 43.4101 520.2 42.6101C518.73 41.8101 517.17 41.1801 515.5 40.7101C513.83 40.2501 512.33 40.0101 511 40.0101C506.07 39.8801 501.03 40.4501 495.9 41.7101C490.77 42.9801 485.77 44.7801 480.9 47.1101C476.03 49.4401 471.43 52.2101 467.1 55.4101C462.77 58.6101 458.93 62.0801 455.6 65.8101M479.8 98.2201H480C479.87 98.3501 479.73 98.4201 479.6 98.4201L479.8 98.2201Z" fill="white"/>
           <path d="M558.79 131.22C558.12 131.35 557.52 131.49 556.99 131.62C556.46 131.75 555.86 131.69 555.19 131.42C554.52 131.02 553.96 130.42 553.49 129.62C553.02 128.82 552.79 128.15 552.79 127.62C552.79 127.35 552.92 126.72 553.19 125.72C553.46 124.72 553.72 123.65 553.99 122.52C554.26 121.39 554.56 120.25 554.89 119.12C555.22 117.99 555.46 117.22 555.59 116.82C556.52 114.82 558.02 113.19 560.09 111.92C562.16 110.65 564.12 110.09 565.99 110.22C566.79 110.35 567.16 110.55 567.09 110.82C567.02 111.09 567.12 111.42 567.39 111.82C567.66 112.09 567.96 112.39 568.29 112.72C568.62 113.05 568.72 113.35 568.59 113.62L568.19 115.02L563.59 127.42C563.19 128.49 562.42 129.39 561.29 130.12C560.16 130.85 559.32 131.22 558.79 131.22ZM566.59 95.2198C565.92 95.3498 564.99 95.4898 563.79 95.6198C562.59 95.7498 561.66 95.6898 560.99 95.4198C560.32 95.0198 559.76 94.4198 559.29 93.6198C558.82 92.8198 558.59 92.1498 558.59 91.6198C558.59 91.0898 558.89 89.8198 559.49 87.8198C560.09 85.8198 560.59 84.2898 560.99 83.2198C561.92 81.3498 563.39 80.1198 565.39 79.5198C567.39 78.9198 569.39 78.6898 571.39 78.8198C572.06 78.9498 572.35 79.1498 572.29 79.4198C572.22 79.6898 572.32 80.0198 572.59 80.4198C572.86 80.6898 573.16 80.9498 573.49 81.2198C573.82 81.4898 573.92 81.7598 573.79 82.0198L573.39 83.4198L571.39 91.4198C570.99 92.4898 570.22 93.3898 569.09 94.1198C567.96 94.8498 567.12 95.2198 566.59 95.2198Z" fill="white"/>
@@ -445,7 +415,7 @@
         </defs>
       </svg>
     </div>
-    <p>서로의 기도제목을 나누고 함께 기도해요</p>
+    <p>하나님이 이같이 우리를 사랑하셨은즉<br>우리도 서로 사랑하는 것이 마땅하도다<br>요한일서 4:11</p>
   </div>
 
   <div class="view-toggle">
@@ -459,7 +429,12 @@
   </div>
 
   <!-- 리스트 뷰 -->
-  <div class="list-view" id="listView"></div>
+  <div class="list-view" id="listView">
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>기도제목을 불러오는 중...</p>
+    </div>
+  </div>
 
   <!-- 캐러셀 뷰 -->
   <div class="carousel-view" id="carouselView">
@@ -473,26 +448,11 @@
     </div>
   </div>
 
-  <button class="fab" onclick="openModal()">+</button>
-
-  <!-- 기도제목 등록 모달 -->
-  <div class="modal-overlay" id="addModal" onclick="closeModal(event)">
-    <div class="modal">
-      <div class="modal-handle"></div>
-      <h2>기도제목 나누기</h2>
-      <form id="prayerForm" onsubmit="submitPrayer(event)">
-        <div class="form-group">
-          <label>이름</label>
-          <input type="text" id="nameInput" placeholder="이름을 입력해주세요" required maxlength="20">
-        </div>
-        <div class="form-group">
-          <label>기도제목</label>
-          <textarea id="prayerInput" placeholder="나누고 싶은 기도제목을 작성해주세요" required maxlength="500"></textarea>
-        </div>
-        <button type="submit" class="submit-btn" id="submitBtn">등록하기</button>
-      </form>
-    </div>
-  </div>
+  <button class="share-btn" onclick="showQR()">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
+    </svg>
+  </button>
 
   <!-- QR 모달 -->
   <div class="modal-overlay" id="qrModal" onclick="closeQR(event)">
@@ -508,33 +468,30 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
   <script>
-    const STORAGE_KEY = 'prayer-share-data';
+    // ============================================
+    // Firebase 설정 - 아래 값을 본인의 Firebase 프로젝트 값으로 교체하세요
+    // ============================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBB1R5ikVGKz2YmMKueqDQZw5FyYjAxpx0",
+      authDomain: "prayer-share-d9850.firebaseapp.com",
+      databaseURL: "https://prayer-share-d9850-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "prayer-share-d9850",
+      storageBucket: "prayer-share-d9850.firebasestorage.app",
+      messagingSenderId: "218015044662",
+      appId: "1:218015044662:web:3d23bc74ac9acc74e0b51f7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     let currentView = 'list';
     let carouselIndex = 0;
-
-    const samplePrayers = [
-      { id: '1', name: '김은혜', content: '이번 주 시험을 앞두고 있는 아이들이 평안한 마음으로 준비할 수 있도록 기도해주세요. 특별히 큰아이가 많이 긴장하고 있어요.', prayCount: 5, createdAt: '2026-04-10' },
-      { id: '2', name: '박준서', content: '새로 시작한 직장에서 잘 적응할 수 있도록 기도 부탁드립니다. 좋은 동료들을 만나게 해주시고, 맡은 일에 지혜를 주시길 기도합니다.', prayCount: 8, createdAt: '2026-04-09' },
-      { id: '3', name: '이수진', content: '어머니께서 다음 주 수술을 앞두고 계십니다. 수술이 잘 되고 빠르게 회복하실 수 있도록 기도해주세요.', prayCount: 12, createdAt: '2026-04-08' },
-      { id: '4', name: '정민호', content: '선교지에서 섬기고 있는 가정에 건강과 평안이 함께하길 기도합니다. 현지 사역이 열매 맺을 수 있도록 중보해주세요.', prayCount: 15, createdAt: '2026-04-07' },
-      { id: '5', name: '최하늘', content: '요즘 마음이 많이 지쳐있습니다. 하나님의 위로와 새 힘을 주시길 기도해주세요. 매일 말씀 묵상하며 회복할 수 있기를 원합니다.', prayCount: 9, createdAt: '2026-04-06' },
-      { id: '6', name: '한소망', content: '결혼을 준비하고 있습니다. 두 가정이 하나 되어 서로를 존중하며 아름다운 가정을 이루어갈 수 있도록 기도 부탁드려요.', prayCount: 7, createdAt: '2026-04-05' },
-      { id: '7', name: '윤성실', content: '교회 청년부 사역을 맡게 되었습니다. 청년들의 마음에 불을 지피고 함께 성장할 수 있는 공동체가 되도록 기도해주세요.', prayCount: 11, createdAt: '2026-04-04' }
-    ];
-
-    function loadPrayers() {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(samplePrayers));
-        return samplePrayers;
-      }
-      return JSON.parse(stored);
-    }
-
-    function savePrayers(prayers) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(prayers));
-    }
+    let prayers = [];
 
     function escapeHtml(text) {
       const div = document.createElement('div');
@@ -542,16 +499,26 @@
       return div.innerHTML;
     }
 
+    function getItems(p) {
+      if (Array.isArray(p.items)) return p.items.filter(Boolean);
+      if (typeof p.content === 'string' && p.content.trim()) return [p.content];
+      return [];
+    }
+
     function buildCard(prayer) {
       const date = new Date(prayer.createdAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
       const prayCount = prayer.prayCount || 0;
+      const items = getItems(prayer);
+      const contentHtml = items.length > 1
+        ? items.map((t, i) => `<div class="prayer-item"><span class="num">${i + 1}</span><span>${escapeHtml(t)}</span></div>`).join('')
+        : (items[0] ? escapeHtml(items[0]) : '');
       return `
         <div class="prayer-card">
           <div class="card-header">
             <div class="card-name">${escapeHtml(prayer.name)}</div>
             <div class="card-date">${date}</div>
           </div>
-          <div class="card-content">${escapeHtml(prayer.content)}</div>
+          <div class="card-content">${contentHtml}</div>
           <div class="card-footer">
             <button class="pray-btn" onclick="togglePray(this, '${prayer.id}')">
               🙏 기도했어요 ${prayCount > 0 ? '<span>' + prayCount + '</span>' : ''}
@@ -563,13 +530,11 @@
 
     // === 렌더링 ===
     function renderPrayers() {
-      const prayers = loadPrayers();
       document.getElementById('cardCount').textContent = prayers.length;
 
-      // 리스트 뷰
       const listEl = document.getElementById('listView');
       if (prayers.length === 0) {
-        const empty = `<div class="empty-state"><div class="icon">🕊️</div><p>아직 기도제목이 없습니다.<br>첫 번째 기도제목을 나눠주세요!</p></div>`;
+        const empty = `<div class="empty-state"><div class="icon">🕊️</div><p>아직 기도제목이 없습니다.<br>관리자가 기도제목을 등록하면 여기에 표시됩니다.</p></div>`;
         listEl.innerHTML = empty;
         document.getElementById('carouselTrack').innerHTML = empty;
         document.getElementById('carouselDots').innerHTML = '';
@@ -578,9 +543,10 @@
 
       listEl.innerHTML = prayers.map(buildCard).join('');
 
-      // 캐러셀 뷰
       document.getElementById('carouselTrack').innerHTML = prayers.map(buildCard).join('');
       renderDots(prayers.length);
+      if (carouselIndex >= prayers.length) carouselIndex = prayers.length - 1;
+      if (carouselIndex < 0) carouselIndex = 0;
       updateCarousel();
     }
 
@@ -613,7 +579,7 @@
       const track = document.getElementById('carouselTrack');
       const cards = track.querySelectorAll('.prayer-card');
       if (cards.length === 0) return 0;
-      return cards[0].offsetWidth + 20; // card width + gap
+      return cards[0].offsetWidth + 20;
     }
 
     function updateCarousel(animate) {
@@ -631,7 +597,6 @@
     }
 
     function carouselNext() {
-      const prayers = loadPrayers();
       if (carouselIndex < prayers.length - 1) {
         carouselIndex++;
         updateCarousel();
@@ -678,50 +643,28 @@
       }
     });
 
-    // === 기도제목 등록 ===
-    function submitPrayer(e) {
-      e.preventDefault();
-      const name = document.getElementById('nameInput').value.trim();
-      const content = document.getElementById('prayerInput').value.trim();
-      if (!name || !content) return;
-
-      const prayers = loadPrayers();
-      prayers.unshift({
-        id: Date.now().toString(),
-        name, content, prayCount: 0,
-        createdAt: new Date().toISOString().split('T')[0]
-      });
-      savePrayers(prayers);
-
-      document.getElementById('nameInput').value = '';
-      document.getElementById('prayerInput').value = '';
-      document.getElementById('addModal').classList.remove('active');
-      renderPrayers();
-      showToast('기도제목이 등록되었습니다 🙏');
-    }
-
+    // === 기도 버튼 ===
     function togglePray(btn, id) {
       if (btn.classList.contains('prayed')) return;
       btn.classList.add('prayed');
-      const prayers = loadPrayers();
-      const prayer = prayers.find(p => p.id === id);
-      if (prayer) {
-        prayer.prayCount = (prayer.prayCount || 0) + 1;
-        savePrayers(prayers);
-        renderPrayers();
-      }
+      const ref = db.ref('prayers/' + id + '/prayCount');
+      ref.transaction(count => (count || 0) + 1);
     }
 
-    // === 모달 ===
-    function openModal() {
-      document.getElementById('addModal').classList.add('active');
-      document.getElementById('nameInput').focus();
-    }
-
-    function closeModal(e) {
-      if (e.target === e.currentTarget)
-        document.getElementById('addModal').classList.remove('active');
-    }
+    // === Firebase 실시간 리스너 ===
+    db.ref('prayers').on('value', (snapshot) => {
+      prayers = [];
+      snapshot.forEach((child) => {
+        prayers.push({ id: child.key, ...child.val() });
+      });
+      // 관리자가 지정한 order 내림차순, 없으면 createdAt 기준
+      prayers.sort((a, b) => {
+        const ao = a.order != null ? a.order : new Date(a.createdAt).getTime();
+        const bo = b.order != null ? b.order : new Date(b.createdAt).getTime();
+        return bo - ao;
+      });
+      renderPrayers();
+    });
 
     // === QR ===
     let qrGenerated = false;
@@ -729,7 +672,7 @@
       document.getElementById('qrModal').classList.add('active');
       if (!qrGenerated) {
         new QRCode(document.getElementById("qrcode"), {
-          text: window.location.href, width: 200, height: 200,
+          text: window.location.origin + window.location.pathname, width: 200, height: 200,
           colorDark: "#6BB89A", colorLight: "#ffffff",
         });
         qrGenerated = true;
@@ -746,8 +689,6 @@
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
-
-    renderPrayers();
   </script>
 </body>
 </html>
