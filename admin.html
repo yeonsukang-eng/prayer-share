@@ -547,11 +547,21 @@
       min-width: 0;
     }
 
+    .admin-card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .admin-card-top .card-number { margin: 0; }
+    .admin-card-top .admin-card-name { margin: 0; flex: 1; min-width: 0; }
+    .admin-card-top .card-actions { flex-direction: row; }
+
     .admin-card-name {
       font-size: 13px;
       font-weight: 700;
       color: #1a2e1a;
-      margin-bottom: 14px;
     }
 
     .admin-card-content {
@@ -945,16 +955,18 @@
         const pos = idx + 1;
         return `
           <div class="admin-card" draggable="true" data-id="${p.id}">
-            <div class="card-number">${pos}</div>
             <div class="admin-card-body">
-              <div class="admin-card-name">${escapeHtml(p.name)}</div>
+              <div class="admin-card-top">
+                <div class="card-number">${pos}</div>
+                <div class="admin-card-name">${escapeHtml(p.name)}</div>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" onclick="openEdit('${p.id}')" title="수정">✎</button>
+                  <button class="action-btn delete-btn" onclick="deletePrayer('${p.id}', '${escapeHtml(p.name)}')" title="삭제">✕</button>
+                </div>
+              </div>
               <div class="admin-card-preview">${escapeHtml(items[0] || '')}${items.length > 1 ? `<span class="more-count">+${items.length - 1}</span>` : ''}</div>
               <div class="admin-card-items">${itemsHtml}</div>
               <div class="admin-card-meta">${date} · 기도 ${p.prayCount || 0}회</div>
-            </div>
-            <div class="card-actions">
-              <button class="action-btn edit-btn" onclick="openEdit('${p.id}')" title="수정">✎</button>
-              <button class="action-btn delete-btn" onclick="deletePrayer('${p.id}', '${escapeHtml(p.name)}')" title="삭제">✕</button>
             </div>
             <div class="drag-handle-right" title="드래그하여 순서 변경">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
