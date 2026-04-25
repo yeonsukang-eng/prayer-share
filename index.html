@@ -9,7 +9,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-      background: linear-gradient(180deg, #8ECFB8, #ffffff);
+      background: linear-gradient(180deg, #6DD4A8, #ffffff);
       color: #1a2e1a;
       min-height: 100vh;
     }
@@ -85,6 +85,82 @@
       font-weight: 500;
     }
 
+    .section-header-spacer { flex: 1; }
+
+    .search-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .search-icon-btn:hover { background: rgba(255,255,255,0.35); }
+    .search-icon-btn.active { background: white; color: #6BB89A; border-color: white; }
+
+    /* Search Bar */
+    .search-bar {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 24px;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.25s ease, opacity 0.2s ease, padding-bottom 0.25s ease;
+    }
+
+    .search-bar.open {
+      max-height: 60px;
+      opacity: 1;
+      padding-bottom: 8px;
+    }
+
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border-radius: 20px;
+      padding: 8px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .search-input-wrap svg { color: #88a88e; flex-shrink: 0; }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 13px;
+      color: #1a2e1a;
+      background: transparent;
+      font-family: inherit;
+    }
+
+    .search-input::placeholder { color: #a8bba8; }
+
+    .search-clear {
+      background: none;
+      border: none;
+      color: #88a88e;
+      cursor: pointer;
+      padding: 2px;
+      display: none;
+      align-items: center;
+    }
+
+    .search-clear.visible { display: flex; }
+
+    @media (max-width: 480px) {
+      .search-bar { padding: 0 16px; }
+    }
+
     /* === LIST VIEW === */
     .list-view {
       max-width: 480px;
@@ -93,6 +169,7 @@
     }
 
     @media (max-width: 480px) {
+      body { background: linear-gradient(180deg, #6DD4A8 0, #6DD4A8 200px, #ffffff 600px); }
       .list-view { padding: 8px 16px 100px; }
       .section-header { padding: 8px 16px; }
       .carousel-wrapper { padding: 8px 20px 16px; }
@@ -216,7 +293,7 @@
 
     .card-name {
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 800;
       color: #1a2e1a;
     }
 
@@ -274,7 +351,7 @@
       border: 1px solid #b5dece;
       background: #eef7f2;
       font-size: 12px;
-      color: #7AC4AA;
+      color: #2F8B63;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -440,6 +517,29 @@
   <div class="section-header">
     <span class="section-title">기도제목</span>
     <span class="card-count" id="cardCount">0</span>
+    <span class="section-header-spacer"></span>
+    <button class="search-icon-btn" id="searchIconBtn" onclick="toggleSearch()" aria-label="검색">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="search-bar" id="searchBar">
+    <div class="search-input-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" class="search-input" id="searchInput" placeholder="이름을 검색하세요" oninput="onSearchInput()">
+      <button class="search-clear" id="searchClear" onclick="clearSearch()" aria-label="지우기">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <!-- 리스트 뷰 -->
@@ -506,6 +606,7 @@
     let currentView = 'list';
     let carouselIndex = 0;
     let prayers = [];
+    let searchQuery = '';
 
     function escapeHtml(text) {
       const div = document.createElement('div');
@@ -543,25 +644,65 @@
     }
 
     // === 렌더링 ===
+    function getFilteredPrayers() {
+      const q = searchQuery.trim().toLowerCase();
+      if (!q) return prayers;
+      return prayers.filter(p => (p.name || '').toLowerCase().includes(q));
+    }
+
     function renderPrayers() {
-      document.getElementById('cardCount').textContent = prayers.length;
+      const list = getFilteredPrayers();
+      document.getElementById('cardCount').textContent = list.length;
 
       const listEl = document.getElementById('listView');
-      if (prayers.length === 0) {
-        const empty = `<div class="empty-state"><div class="icon">🕊️</div><p>아직 기도제목이 없습니다.<br>관리자가 기도제목을 등록하면 여기에 표시됩니다.</p></div>`;
+      if (list.length === 0) {
+        const empty = searchQuery.trim()
+          ? `<div class="empty-state"><div class="icon">🔍</div><p>"${escapeHtml(searchQuery)}" 검색 결과가 없습니다.</p></div>`
+          : `<div class="empty-state"><div class="icon">🕊️</div><p>아직 기도제목이 없습니다.<br>관리자가 기도제목을 등록하면 여기에 표시됩니다.</p></div>`;
         listEl.innerHTML = empty;
         document.getElementById('carouselTrack').innerHTML = empty;
         document.getElementById('carouselDots').innerHTML = '';
         return;
       }
 
-      listEl.innerHTML = prayers.map(buildCard).join('');
+      listEl.innerHTML = list.map(buildCard).join('');
 
-      document.getElementById('carouselTrack').innerHTML = prayers.map(buildCard).join('');
-      renderDots(prayers.length);
-      if (carouselIndex >= prayers.length) carouselIndex = prayers.length - 1;
+      document.getElementById('carouselTrack').innerHTML = list.map(buildCard).join('');
+      renderDots(list.length);
+      if (carouselIndex >= list.length) carouselIndex = list.length - 1;
       if (carouselIndex < 0) carouselIndex = 0;
       updateCarousel();
+    }
+
+    // === 검색 ===
+    function toggleSearch() {
+      const bar = document.getElementById('searchBar');
+      const btn = document.getElementById('searchIconBtn');
+      const input = document.getElementById('searchInput');
+      const isOpen = bar.classList.toggle('open');
+      btn.classList.toggle('active', isOpen);
+      if (isOpen) {
+        setTimeout(() => input.focus(), 100);
+      } else {
+        clearSearch();
+      }
+    }
+
+    function onSearchInput() {
+      const input = document.getElementById('searchInput');
+      searchQuery = input.value;
+      document.getElementById('searchClear').classList.toggle('visible', searchQuery.length > 0);
+      carouselIndex = 0;
+      renderPrayers();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      searchQuery = '';
+      document.getElementById('searchClear').classList.remove('visible');
+      carouselIndex = 0;
+      renderPrayers();
     }
 
     // === 뷰 전환 ===
